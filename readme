@@ -1,0 +1,15 @@
+Files:
+decode.c
+    Contains the functions used to decode files encrypted with huffman's algorithm
+encode.c
+    Contains the functions used to compress files using huffman's algorithm
+functions.c 
+    Contains functions used both for encoding and decoding files
+main.c
+    Contains a main function which runs either the encode or decode algorithm depending on the command given
+functions.h
+    Contains the ____ for general functions used for encoding and decoding files
+HuffmanTree.h
+    Defines the huffman tree data structure and functions which operate on the tree
+
+    
