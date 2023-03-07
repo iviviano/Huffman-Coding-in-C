@@ -1,11 +1,13 @@
 #include "functions.h"
 #include "HuffmanTree.h"
 
+#define NUM_CHAR UCHAR_MAX + 1
+
 int runEncode(const char* rfilename, const char* wfilename) {
   FILE* rfile = openFile(rfilename, "r");
   FILE* wfile = !strcmp(wfilename, STDOUT) ? NULL : openFile(wfilename, "w");
   
-  int frequencies[CHAR_MAX];
+  int frequencies[NUM_CHAR];
   
   getFrequencies(rfile, frequencies);
   
@@ -23,7 +25,7 @@ int runEncode(const char* rfilename, const char* wfilename) {
   
   encodeFile(bitstrings, rfile, wfile);
   
-  for (int i = EOF; i < CHAR_MAX; i++) {
+  for (int i = EOF; i < NUM_CHAR; i++) {
     if (bitstrings[i] != NULL) 
       free(bitstrings[i]);
     bitstrings[i] = NULL;
@@ -34,17 +36,20 @@ int runEncode(const char* rfilename, const char* wfilename) {
   freeLinkedList(tree);
   
   fclose(rfile);
-  fclose(wfile);
+  if (wfile != NULL)
+    fclose(wfile);
   
   return EXIT_SUCCESS;
 }
 
-void getFrequencies(FILE* rfile, int frequencies[CHAR_MAX]) {
-  for (int i = 0; i < CHAR_MAX; i++) {
+void getFrequencies(FILE* rfile, int frequencies[UCHAR_MAX]) {
+  for (int i = 0; i < NUM_CHAR; i++) {
     frequencies[i] = 0;
   }
   
   for (int c = fgetc(rfile); c != EOF; c = fgetc(rfile)) {
+    if (c >= NUM_CHAR)
+      fprintf(stderr, "%c has value: %d\n", c, c);
     frequencies[c]++;
   }
 }
@@ -56,8 +61,8 @@ Tree* newTree(void) {
   return newTree;
 }
 
-void addNodes(Tree* list, int frequencies[CHAR_MAX]) {
-  for (int i = 0; i < CHAR_MAX; i++) {
+void addNodes(Tree* list, int frequencies[UCHAR_MAX]) {
+  for (int i = 0; i < NUM_CHAR; i++) {
     if (frequencies[i] != 0) 
       insertNode(list, newNode(i, frequencies[i]));
   }
@@ -119,11 +124,11 @@ void printTree(Node* node, FILE* wfile) {
 void recGetBitstrings(Node*, char**, char*, int);
 
 char** getBitstrings(Tree* tree) {
-  char** array = doMalloc((CHAR_MAX + 1) * sizeof(char*));
+  char** array = doMalloc((NUM_CHAR + 1) * sizeof(char*));
   
   char** bitstrings = &array[1];
   
-  for (int i = EOF; i < CHAR_MAX; i++) {
+  for (int i = EOF; i < NUM_CHAR; i++) {
     bitstrings[i] = NULL;
   }
   
@@ -134,7 +139,6 @@ char** getBitstrings(Tree* tree) {
   free(bitstring);
   
   return bitstrings;
-  
 }
 
 void recGetBitstrings(Node* node, char** bitstrings, char* bitstring, int level) {

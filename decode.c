@@ -13,7 +13,10 @@ int runDecode(const char* rfilename, const char* wfilename) {
   freeLinkedList(tree);
 
   fclose(rfile);
-  fclose(wfile);
+  if (wfile != NULL) {
+    printf("wfile is not stdout");
+    fclose(wfile);
+  }
   
   return EXIT_SUCCESS;
 }
