@@ -1,5 +1,5 @@
-CC := clang
-CFLAGS := -Wall
+CC := gccx
+CFLAGS := -g
 TARGETS := encode decode
 HEADERS := HuffmanTree.h functions.h
 OBJECTS := encode.o decode.o functions.o main.o
@@ -16,4 +16,4 @@ decode: $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
-	rm -f $(TARGETS) *.o *~
+	rm -f $(TARGETS) *.o *~ *core*
