@@ -3,18 +3,30 @@
 
 int runDecode(const char* rfilename, const char* wfilename) {
   FILE* rfile = openFile(rfilename, "r");
+  FILE* bits = openFile(BITS, "w");
   FILE* wfile = !strcmp(wfilename, STDOUT) ? NULL : openFile(wfilename, "w");
+
+  fprintf(stderr, "Putting input into bits\n");
+  encode_bits(rfile, bits);
   
-  Tree* tree = buildTree(rfile);
+  fclose(bits);
+
+  //fprintf(stderr, "Reopening bits to read\n");
+  bits = openFile(BITS, "r");
+
+  //fprintf(stderr, "Building the tree using bits\n");
+  Tree* tree = buildTree(bits);
+
+  //fprintf(stderr, "decoding the file\n");
+  decodeFile(tree, bits, wfile);
   
-  decodeFile(tree, rfile, wfile);
-  
-  fprintf(stderr, "Freeing everything\n");
+  //fprintf(stderr, "Freeing everything\n");
   freeLinkedList(tree);
 
   fclose(rfile);
+  fclose(bits);
   if (wfile != NULL) {
-    printf("wfile is not stdout");
+    //fprintf(stderr, "wfile is not stdout");
     fclose(wfile);
   }
   
@@ -43,7 +55,7 @@ Node* recBuild(FILE* file) {
   int c = 0;
   for (int i = 0; i < CHAR_BIT; i++) 
     c = 2 * c + fgetc(file) - '0';
-  //printf("Creating leaf node for %c\n", c);
+  printf("Creating leaf node for %c : %d\n", c, c);
   return newNode(c, 0);
 }
 
@@ -56,19 +68,34 @@ void decodeFile(Tree* tree, FILE* rfile, FILE* wfile) {
     else
       node = node->right;
   }
+  fprintf(stderr, "Fixing EOF: node->c is %d\n", node->c);
   node->c = EOF;
-  int character = '\0';
+  int character = UCHAR_MAX + 1;
+  //int acc = 0; //for testing
   while (character != EOF) {
-    if (character != '\0')
+    if (character <= UCHAR_MAX)
       PUTC(wfile, character);
-    //putchar(character); //for debugging
+    fputc(character, stderr); //for debugging
+    //fputc(acc++ + '0', stderr);
     node = tree->head;
+    //fputc('\n', stderr);
     for (; node->left != NULL; c = fgetc(rfile)) {
-      if (c == '0')
+      if (c == '0') 
+	//fprintf(stderr, "c is %c\n", c);
 	node = node->left;
-      else
+      else 
+       	//fprintf(stderr, "c is %c\n", c);
 	node = node->right;
     }
     character = node->c;
+  }
+}
+
+void encode_bits(FILE* rfile, FILE* bits) {
+  for (int c = fgetc(rfile); c != EOF; c = fgetc(rfile)) {
+    for (int i = 0; i < CHAR_BIT; i++) {
+      fputc(((c & 0x80) >> (CHAR_BIT - 1)) + '0', bits);
+      c = c << 1;
+    }
   }
 }

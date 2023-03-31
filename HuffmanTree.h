@@ -27,7 +27,7 @@ void makeTree(Tree*);
 void freeLinkedList(Tree*);
 void insertNode(Tree*, Node*);
 
-void printTree(Node*, FILE* wfile);
+void printTree(Node*, FILE*, int*);
 char** getBitstrings(Tree*);
 
 Tree* buildTree(FILE*);

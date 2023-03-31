@@ -1,6 +1,6 @@
 CC := gccx
 CFLAGS := -g
-TARGETS := encode decode
+TARGETS := encode decode bits
 HEADERS := HuffmanTree.h functions.h
 OBJECTS := encode.o decode.o functions.o main.o
 
@@ -14,6 +14,9 @@ encode: $(OBJECTS)
 
 decode: $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^
+
+bits:
+	touch $@
 
 clean:
 	rm -f $(TARGETS) *.o *~ *core*

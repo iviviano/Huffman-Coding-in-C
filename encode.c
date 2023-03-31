@@ -5,6 +5,7 @@
 
 int runEncode(const char* rfilename, const char* wfilename) {
   FILE* rfile = openFile(rfilename, "r");
+  FILE* bits = openFile(BITS, "w");
   FILE* wfile = !strcmp(wfilename, STDOUT) ? NULL : openFile(wfilename, "w");
   
   int frequencies[NUM_CHAR];
@@ -15,15 +16,19 @@ int runEncode(const char* rfilename, const char* wfilename) {
   addNodes(tree, frequencies);
   
   makeTree(tree);
+
+  int* bit_counter = doMalloc(sizeof(int));
+
+  *bit_counter = 0;
   
-  printTree(tree->head, wfile);
+  printTree(tree->head, bits, bit_counter);
   
   fclose(rfile);
   rfile = openFile(rfilename, "r");
   
   char** bitstrings = getBitstrings(tree);
   
-  encodeFile(bitstrings, rfile, wfile);
+  encodeFile(bitstrings, rfile, bits, bit_counter);
   
   for (int i = EOF; i < NUM_CHAR; i++) {
     if (bitstrings[i] != NULL) 
@@ -36,8 +41,17 @@ int runEncode(const char* rfilename, const char* wfilename) {
   freeLinkedList(tree);
   
   fclose(rfile);
+  fclose(bits);
+  bits = openFile(BITS, "r");
+  
+  decode_bits(bits, wfile);
+
+  fclose(bits);
+  
   if (wfile != NULL)
     fclose(wfile);
+
+  free(bit_counter);
   
   return EXIT_SUCCESS;
 }
@@ -48,8 +62,6 @@ void getFrequencies(FILE* rfile, int frequencies[UCHAR_MAX]) {
   }
   
   for (int c = fgetc(rfile); c != EOF; c = fgetc(rfile)) {
-    if (c >= NUM_CHAR)
-      fprintf(stderr, "%c has value: %d\n", c, c);
     frequencies[c]++;
   }
 }
@@ -101,9 +113,10 @@ void makeTree(Tree* list) {
   }
 }
 
-void printTree(Node* node, FILE* wfile) {
+void printTree(Node* node, FILE* bits, int* bit_counter) {
   if (node->left == NULL) {
-    PUTC(wfile, '1');
+    fputc('1', bits);
+    *bit_counter = *bit_counter + 1;
     char c = node->c;
     int bit[__CHAR_BIT__];
     for (int i = 0; i < __CHAR_BIT__; i++) {
@@ -111,13 +124,15 @@ void printTree(Node* node, FILE* wfile) {
       c = c / 2;
     }
     for (int i = 1; i <= __CHAR_BIT__; i++) {
-      PUTC(wfile, '0' + bit[__CHAR_BIT__ - i]);
+      fputc('0' + bit[__CHAR_BIT__ - i], bits);
+      *bit_counter = *bit_counter + 1;
     }
   }
   else {
-    PUTC(wfile, '0');
-    printTree(node->left, wfile);
-    printTree(node->right, wfile);
+    fputc('0', bits);
+    *bit_counter = *bit_counter + 1;
+    printTree(node->left, bits, bit_counter);
+    printTree(node->right, bits, bit_counter);
   }
 }
 
@@ -155,14 +170,34 @@ void recGetBitstrings(Node* node, char** bitstrings, char* bitstring, int level)
   }
 }
 
-void encodeFile(char** bitstrings, FILE* rfile, FILE* wfile) {
-  int bit_counter = 0;
-  PRINT(wfile, bitstrings[EOF]);
+void encodeFile(char** bitstrings, FILE* rfile, FILE* bits, int* bit_counter) {
+  fprintf(bits, "%s", bitstrings[EOF]);
+  fprintf(stderr, "Printed first EOF bitstring\n");
+  *bit_counter = *bit_counter + 2* strlen(bitstrings[EOF]);
   for (int c = fgetc(rfile); c != EOF; c = fgetc(rfile)) {
-    PRINT(wfile, bitstrings[c]);
-    bit_counter += strlen(bitstrings[c]);
+    fprintf(bits, "%s", bitstrings[c]);
+    *bit_counter = *bit_counter + strlen(bitstrings[c]);
   }
-  PRINT(wfile, bitstrings[EOF]);
-  for (; bit_counter % CHAR_BIT != 0; bit_counter++)
-    PUTC(wfile, '0');
+  fprintf(bits, "%s", bitstrings[EOF]);
+  fprintf(stderr, "Printed second EOF bitstring\n");
+  for (; *bit_counter % CHAR_BIT != 0; *bit_counter = *bit_counter + 1)
+    fputc('0', bits);
+  fprintf(stderr, "Total bits printed: %d\n", *bit_counter);
+}
+
+void decode_bits(FILE* bits, FILE* wfile) {
+  int c = 0;
+  int bit_counter = 0;
+
+  for (int ch = fgetc(bits); ch != EOF; ch = fgetc(bits)) {
+    //putchar(ch);
+    if (bit_counter % CHAR_BIT == 0 && bit_counter != 0) {
+      PUTC(wfile, c);
+      c = 0;
+    }
+    c = (c << 1) + (ch - '0');
+    bit_counter++;
+  }
+  PUTC(wfile, c);
+  //PUTC(wfile, '\n');
 }
