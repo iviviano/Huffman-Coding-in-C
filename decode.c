@@ -3,7 +3,7 @@
 
 int runDecode(const char* rfilename, const char* wfilename) {
   FILE* rfile = openFile(rfilename, "r");
-  FILE* bits = openFile(BITS, "w");
+  FILE* bits = openFile(BITS, "w"); 
   FILE* wfile = !strcmp(wfilename, STDOUT) ? NULL : openFile(wfilename, "w");
 
   fprintf(stderr, "Putting input into bits\n");
@@ -23,7 +23,7 @@ int runDecode(const char* rfilename, const char* wfilename) {
   //fprintf(stderr, "Freeing everything\n");
   freeLinkedList(tree);
 
-  fclose(rfile);
+  //  fclose(rfile); need to close this!
   fclose(bits);
   if (wfile != NULL) {
     //fprintf(stderr, "wfile is not stdout");
@@ -53,8 +53,12 @@ Node* recBuild(FILE* file) {
   }
   //leaf node:
   int c = 0;
-  for (int i = 0; i < CHAR_BIT; i++) 
-    c = 2 * c + fgetc(file) - '0';
+  for (int i = 0; i < CHAR_BIT; i++) {
+    char ch = fgetc(file);
+    if (c != '0' && c != '1')
+      fputc(ch, stderr);
+    c = 2 * c + ch - '0';
+  }
   printf("Creating leaf node for %c : %d\n", c, c);
   return newNode(c, 0);
 }
@@ -75,7 +79,7 @@ void decodeFile(Tree* tree, FILE* rfile, FILE* wfile) {
   while (character != EOF) {
     if (character <= UCHAR_MAX)
       PUTC(wfile, character);
-    fputc(character, stderr); //for debugging
+    //fputc(character, stderr); //for debugging
     //fputc(acc++ + '0', stderr);
     node = tree->head;
     //fputc('\n', stderr);

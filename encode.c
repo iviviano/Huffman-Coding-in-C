@@ -57,13 +57,11 @@ int runEncode(const char* rfilename, const char* wfilename) {
 }
 
 void getFrequencies(FILE* rfile, int frequencies[UCHAR_MAX]) {
-  for (int i = 0; i < NUM_CHAR; i++) {
+  for (int i = 0; i < NUM_CHAR; i++) 
     frequencies[i] = 0;
-  }
   
-  for (int c = fgetc(rfile); c != EOF; c = fgetc(rfile)) {
+  for (int c = fgetc(rfile); c != EOF; c = fgetc(rfile)) 
     frequencies[c]++;
-  }
 }
 
 Tree* newTree(void) {
@@ -74,10 +72,9 @@ Tree* newTree(void) {
 }
 
 void addNodes(Tree* list, int frequencies[UCHAR_MAX]) {
-  for (int i = 0; i < NUM_CHAR; i++) {
+  for (int i = 0; i < NUM_CHAR; i++) 
     if (frequencies[i] != 0) 
       insertNode(list, newNode(i, frequencies[i]));
-  }
 }
 
 void insertNode(Tree* list, Node* node) {
@@ -143,9 +140,8 @@ char** getBitstrings(Tree* tree) {
   
   char** bitstrings = &array[1];
   
-  for (int i = EOF; i < NUM_CHAR; i++) {
+  for (int i = EOF; i < NUM_CHAR; i++) 
     bitstrings[i] = NULL;
-  }
   
   char* bitstring = doMalloc(CHAR_BIT * CHAR_BIT * sizeof(char));
   

@@ -6,7 +6,7 @@ OBJECTS := encode.o decode.o functions.o main.o
 
 all: $(TARGETS)
 
-%.o: %.c HEADERS
+%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 encode: $(OBJECTS)
