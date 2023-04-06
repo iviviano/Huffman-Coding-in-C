@@ -8,11 +8,11 @@ typedef struct Node Node;
 typedef struct Tree Tree;
 
 struct Node {
-    int c;
-    int count;
-    Node* next;
-    Node* left;
-    Node* right;
+  int c;
+  int count;
+  Node* next;
+  Node* left;
+  Node* right;
 };
 
 struct Tree {

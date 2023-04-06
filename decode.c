@@ -39,7 +39,7 @@ Tree* buildTree(FILE* rfile) {
   Tree* tree = doMalloc(sizeof(Tree));
   
   tree->head = recBuild(rfile);
-  
+
   return tree;
 }
 
@@ -55,7 +55,7 @@ Node* recBuild(FILE* file) {
   int c = 0;
   for (int i = 0; i < CHAR_BIT; i++) {
     char ch = fgetc(file);
-    if (c != '0' && c != '1')
+    if (ch != '0' && ch != '1')
       fputc(ch, stderr);
     c = 2 * c + ch - '0';
   }

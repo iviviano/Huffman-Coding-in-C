@@ -29,6 +29,22 @@ int runEncode(const char* rfilename, const char* wfilename) {
   char** bitstrings = getBitstrings(tree);
   
   encodeFile(bitstrings, rfile, bits, bit_counter);
+
+  fprintf(stderr, "%-10scount bitstring\n", "char");
+  fprintf(stderr, "%-10s_____ _________\n", "____");
+  for (int i = EOF; i < NUM_CHAR; i++) {
+    if (bitstrings[i] != NULL) {
+      fprintf(stderr, "%-5d%-6c", i, i);
+      Node* node = tree->head;
+      for (int j = 0; bitstrings[i][j] != '\0'; j++) {
+	if (bitstrings[i][j] == '1')
+	  node = node->right;
+	else
+	  node = node->left;
+      }
+      fprintf(stderr, "%-6d%s\n", node->count, bitstrings[i]);
+    }
+  }
   
   for (int i = EOF; i < NUM_CHAR; i++) {
     if (bitstrings[i] != NULL) 
@@ -115,13 +131,16 @@ void printTree(Node* node, FILE* bits, int* bit_counter) {
     fputc('1', bits);
     *bit_counter = *bit_counter + 1;
     char c = node->c;
-    int bit[__CHAR_BIT__];
-    for (int i = 0; i < __CHAR_BIT__; i++) {
+    int null = c == '\0' ? 1 : 0; //for testing
+    int bit[CHAR_BIT];
+    for (int i = 0; i < CHAR_BIT; i++) {
       bit[i] = c % 2;
       c = c / 2;
     }
-    for (int i = 1; i <= __CHAR_BIT__; i++) {
-      fputc('0' + bit[__CHAR_BIT__ - i], bits);
+    for (int i = 1; i <= CHAR_BIT; i++) {
+      fputc('0' + bit[CHAR_BIT - i], bits);
+      if (null)
+	fputc('0' + bit[CHAR_BIT - i], stderr);	
       *bit_counter = *bit_counter + 1;
     }
   }
