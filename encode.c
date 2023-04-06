@@ -131,18 +131,27 @@ void printTree(Node* node, FILE* bits, int* bit_counter) {
     fputc('1', bits);
     *bit_counter = *bit_counter + 1;
     char c = node->c;
-    int null = c == '\0' ? 1 : 0; //for testing
-    int bit[CHAR_BIT];
+    
+    /* int bit[CHAR_BIT]; */
+    /* for (int i = 0; i < CHAR_BIT; i++) { */
+    /*   bit[i] = c % 2; */
+    /*   c = c / 2; */
+    /* } */
+    /* for (int i = 1; i <= CHAR_BIT; i++) { */
+    /*   fputc('0' + bit[CHAR_BIT - i], bits); */
+      
+    /*   *bit_counter = *bit_counter + 1; */
+    /*} */
+
     for (int i = 0; i < CHAR_BIT; i++) {
-      bit[i] = c % 2;
-      c = c / 2;
-    }
-    for (int i = 1; i <= CHAR_BIT; i++) {
-      fputc('0' + bit[CHAR_BIT - i], bits);
-      if (null)
-	fputc('0' + bit[CHAR_BIT - i], stderr);	
+      if (c & 0x80)
+	fputc('1', bits);
+      else
+	fputc('0', bits);
+      c = c << 1;
       *bit_counter = *bit_counter + 1;
     }
+
   }
   else {
     fputc('0', bits);
