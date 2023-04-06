@@ -10,7 +10,7 @@ int runDecode(const char* rfilename, const char* wfilename) {
   encode_bits(rfile, bits);
   
   fclose(bits);
-
+  
   //fprintf(stderr, "Reopening bits to read\n");
   bits = openFile(BITS, "r");
 
@@ -25,6 +25,10 @@ int runDecode(const char* rfilename, const char* wfilename) {
 
   fclose(rfile);
   fclose(bits);
+
+  bits = openFile(BITS, "w"); //clear bits to reduce storage
+  fclose(bits);
+
   if (wfile != NULL) {
     //fprintf(stderr, "wfile is not stdout");
     fclose(wfile);

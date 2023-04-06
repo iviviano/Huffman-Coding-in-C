@@ -63,6 +63,9 @@ int runEncode(const char* rfilename, const char* wfilename) {
   decode_bits(bits, wfile);
 
   fclose(bits);
+
+  bits = openFile(BITS, "w"); //clear bits file to reduce storage
+  fclose(bits);
   
   if (wfile != NULL)
     fclose(wfile);
