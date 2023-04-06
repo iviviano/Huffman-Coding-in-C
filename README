@@ -1,0 +1,32 @@
+Isaac Viviano
+
+Programs:
+
+encode:
+Reads a file specified as the first command-line argument, and encodes it using Huffman's algorithm. It writes output to the file given as the second comand line argument or stdout if no file is given.
+
+decode:
+Reads a file specified as the first command-line argument that was encoded by encode. Decodes the file and writes output to the file given as the second comand line argument or stdout if no file is given.
+
+
+Files:
+
+main.c:
+Contains the main function for the encode and decode programs.
+encode.c:
+Contains definitions for functions used exclusively by the encode program.
+decode.c:
+Contains definitions for functions used exclusively by the decode program.
+HuffmanTree.h:
+Contains the type definition and function declarations for using the HuffmanTree data type.
+functions.h:
+Contains the function declarations for both encode and decode programs.
+functions.c:
+Contains definitions for the functions used by both programs.
+
+
+As far as I know, there are no errors or bugs. It runs under valgrind with no errors or memory leaks.
+
+
+I have adhered to the Honor Code on this assignment.
+Isaac Viviano
