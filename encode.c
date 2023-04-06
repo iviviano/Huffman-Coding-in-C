@@ -30,21 +30,21 @@ int runEncode(const char* rfilename, const char* wfilename) {
   
   encodeFile(bitstrings, rfile, bits, bit_counter);
 
-  fprintf(stderr, "%-10scount bitstring\n", "char");
-  fprintf(stderr, "%-10s_____ _________\n", "____");
-  for (int i = EOF; i < NUM_CHAR; i++) {
-    if (bitstrings[i] != NULL) {
-      fprintf(stderr, "%-5d%-6c", i, i);
-      Node* node = tree->head;
-      for (int j = 0; bitstrings[i][j] != '\0'; j++) {
-	if (bitstrings[i][j] == '1')
-	  node = node->right;
-	else
-	  node = node->left;
-      }
-      fprintf(stderr, "%-6d%s\n", node->count, bitstrings[i]);
-    }
-  }
+  /* fprintf(stderr, "%-10scount bitstring\n", "char"); */
+  /* fprintf(stderr, "%-10s_____ _________\n", "____"); */
+  /* for (int i = EOF; i < NUM_CHAR; i++) { */
+  /*   if (bitstrings[i] != NULL) { */
+  /*     fprintf(stderr, "%-5d%-6c", i, i); */
+  /*     Node* node = tree->head; */
+  /*     for (int j = 0; bitstrings[i][j] != '\0'; j++) { */
+  /* 	if (bitstrings[i][j] == '1') */
+  /* 	  node = node->right; */
+  /* 	else */
+  /* 	  node = node->left; */
+  /*     } */
+  /*     fprintf(stderr, "%-6d%s\n", node->count, bitstrings[i]); */
+  /*   } */
+  /* } */
   
   for (int i = EOF; i < NUM_CHAR; i++) {
     if (bitstrings[i] != NULL) 
@@ -132,17 +132,6 @@ void printTree(Node* node, FILE* bits, int* bit_counter) {
     *bit_counter = *bit_counter + 1;
     char c = node->c;
     
-    /* int bit[CHAR_BIT]; */
-    /* for (int i = 0; i < CHAR_BIT; i++) { */
-    /*   bit[i] = c % 2; */
-    /*   c = c / 2; */
-    /* } */
-    /* for (int i = 1; i <= CHAR_BIT; i++) { */
-    /*   fputc('0' + bit[CHAR_BIT - i], bits); */
-      
-    /*   *bit_counter = *bit_counter + 1; */
-    /*} */
-
     for (int i = 0; i < CHAR_BIT; i++) {
       if (c & 0x80)
 	fputc('1', bits);
@@ -196,17 +185,17 @@ void recGetBitstrings(Node* node, char** bitstrings, char* bitstring, int level)
 
 void encodeFile(char** bitstrings, FILE* rfile, FILE* bits, int* bit_counter) {
   fprintf(bits, "%s", bitstrings[EOF]);
-  fprintf(stderr, "Printed first EOF bitstring\n");
+  //fprintf(stderr, "Printed first EOF bitstring\n");
   *bit_counter = *bit_counter + 2* strlen(bitstrings[EOF]);
   for (int c = fgetc(rfile); c != EOF; c = fgetc(rfile)) {
     fprintf(bits, "%s", bitstrings[c]);
     *bit_counter = *bit_counter + strlen(bitstrings[c]);
   }
   fprintf(bits, "%s", bitstrings[EOF]);
-  fprintf(stderr, "Printed second EOF bitstring\n");
+  //fprintf(stderr, "Printed second EOF bitstring\n");
   for (; *bit_counter % CHAR_BIT != 0; *bit_counter = *bit_counter + 1)
     fputc('0', bits);
-  fprintf(stderr, "Total bits printed: %d\n", *bit_counter);
+  //fprintf(stderr, "Total bits printed: %d\n", *bit_counter);
 }
 
 void decode_bits(FILE* bits, FILE* wfile) {
