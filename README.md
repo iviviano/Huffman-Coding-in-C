@@ -1,6 +1,8 @@
-Isaac Viviano
+This is a class project implementing Huffman's algorithm for lossless compression and decomprssion in C. 
 
-Programs:
+# Isaac Viviano
+
+### Programs:
 
 encode:
 Reads a file specified as the first command-line argument, and encodes it using Huffman's algorithm. It writes output to the file given as the second comand line argument or stdout if no file is given.
@@ -17,7 +19,7 @@ Runs the Huffman decode algorithm on files encoded by encode2.
 compare.sh
 Takes an input file specifies as the first command-line argument. Encodes the input file using encode and encode2. Prints the size of the encoded file after encoding to compare the compression from 1 and 2 character sequences.
 
-Files:
+### Files:
 
 main.c:
 Contains the main function for the encode and decode programs.
